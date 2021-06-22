@@ -5,7 +5,7 @@ export SHELL := /bin/bash
 include etc/nix.mk
 
 OPT =
-BIN ?= lamh
+BIN = baka
 
 dev: clean ## build continuously
 	@cabal build 2>&1 | source-highlight --src-lang=haskell --out-format=esc
@@ -14,8 +14,8 @@ dev: clean ## build continuously
 
 dev-ghcid: clean ## build continuously using ghcid
 	@ghcid --command="cabal $(OPTS) repl -fwarn-unused-binds -fwarn-unused-imports -fwarn-orphans" \
-	       --reload=app/lamh.hs \
-	       --restart=lamh.cabal \
+	       --reload=app/$(BIN).hs \
+	       --restart=baka.cabal \
 	| source-highlight --src-lang=haskell --out-format=esc
 
 build: clean # lint (breaks on multiple readers) ## build
@@ -30,7 +30,7 @@ lint: ## lint
 clean: ## clean
 	cabal $(OPT) clean
 
-run: ## run main, default: BIN=lamh
+run: ## run main, default: BIN=baka
 	cabal $(OPT) run ${BIN}
 
 repl: ## repl
@@ -60,18 +60,6 @@ shell: ## initialize project
 update: ## update project depedencies
 	${MAKE} -f etc/init.mk cabal-update
 	${MAKE} -f etc/init.mk install-pkgs
-
-lambda-dev: ## deploy to s3 bucket in development
-	cd etc && ${MAKE} -f deploy.mk $@
-
-lambda-prod: ## deploy to s3 bucket in production
-	cd etc && ${MAKE} -f deploy.mk $@
-
-trigger-dev: ## trigger lambda in dev
-	touch /tmp/_SYNC && aws s3 cp /tmp/_SYNC s3://earnest-deli-test-dev-us-east-1/
-
-zip: ## build and zip lambda function
-	${MAKE} -f etc/deploy.mk $@
 
 curl: ## curl --head https://google.com
 	echo $(NIX_SSL_CERT_FILE)
