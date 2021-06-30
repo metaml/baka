@@ -1,11 +1,12 @@
 module Baka.Grid where
 
 import Control.Lens
+import Data.List
 import Data.Maybe
-import Debug.Trace
+import qualified Data.Map as M
 
 data Point = Point Row Column
-           deriving (Eq, Show)
+           deriving (Eq, Ord, Show)
 
 type Grid = [[Bool]]
 
@@ -53,6 +54,28 @@ up = (0, -1)
 
 down :: Direction
 down = (0, 1)
+
+-- adjacency matrix
+paths' :: Point -> Grid -> [Point] -> [[Point]]
+paths' p g vs = let vs' = vs <> [p]
+                    ns = fromMaybe [] (M.lookup p adjMat) \\ vs'
+                in case ns of
+                     [] -> [vs']
+                     _  -> concatMap (\n -> paths' n g vs') ns
+
+adjMat :: Ord Point => M.Map Point [Point]
+adjMat = adjMat' grid
+  where adjMat' :: Ord Point => Grid -> M.Map Point [Point]
+        adjMat' g = let ps = points g
+                        pps = (\p -> (p, neighbors p g)) <$> ps
+                    in M.fromList pps
+
+points :: Grid -> [Point]
+points g = fromJust <$> filter (/= Nothing) (points' g)
+  where points' :: Grid -> [Maybe Point]
+        points' g = [ Just (Point r c) | r <- [0..length g - 1]
+                                       , c <- [0..length (g !! 0) - 1]
+                                       , (g !! r) !! c ]
 
 start = Point 0 0
 grid = [ [True, True,  False, False]
