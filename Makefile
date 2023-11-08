@@ -1,25 +1,33 @@
-.DEFAULT_GOAL = help
+.DEFAULT_GOAL = build
 
-export SHELL := /bin/bash
+export SHELL := /bin/sh
+export NIX_REMOTE = daemon
+export GOOGLE_APPLICATION_CREDENTIALS ?= tmp/lpgprj-gss-p-ctrlog-gl-01-c0096aaa9469.json
 
-include etc/nix.mk
+PROJECT ?= ${HOME}/${LOGNAME}/p/baka
+PWD     := $(shell pwd)
 
-OPT =
-BIN = baka
+BIN ?= baka
 
-dev: clean ## build continuously
-	@cabal build 2>&1 | source-highlight --src-lang=haskell --out-format=esc
-	@fswatcher --path . --include "\.hs$$|\.cabal$$" --throttle 31 cabal -- $(OPT) build 2>&1 \
+CABAL_BUILD = cabal build --jobs \$$ncpus --minimize-conflict-set 
+
+build: clean ## build (default)
+	@$(CABAL_BUILD) 2>&1 \
 	| source-highlight --src-lang=haskell --out-format=esc
 
-dev-ghcid: clean ## build continuously using ghcid
-	@ghcid --command="cabal $(OPTS) repl -fwarn-unused-binds -fwarn-unused-imports -fwarn-orphans" \
-	       --reload=app/$(BIN).hs \
-	       --restart=baka.cabal \
+buildc: clean ## build continuously
+	@$(CABAL_BUILD) 2>&1 \
+	| source-highlight --src-lang=haskell --out-format=esc
+	watchexec --exts cabal,hs -- $(CABAL_BUILD) 2>&1 \
 	| source-highlight --src-lang=haskell --out-format=esc
 
-build: clean # lint (breaks on multiple readers) ## build
-	cabal $(OPT) build --jobs='$$ncpus' | source-highlight --src-lang=haskell --out-format=esc
+install: # install binary
+	rm -rf bin/* && mkdir -p bin
+	cabal build --verbose
+	cabal install --overwrite-policy=always --install-method=copy --installdir=bin
+
+dev: ## nix develop
+	nix develop
 
 test: ## test
 	cabal $(OPT) test
@@ -28,39 +36,56 @@ lint: ## lint
 	hlint app src
 
 clean: ## clean
-	cabal $(OPT) clean
+	-cabal clean
 
-run: ## run main, default: BIN=baka
-	cabal $(OPT) run ${BIN}
+clobber: clean ## cleanpq
+	rm -rf dist-newstyle
+	rm -rf tmp/*
 
+# make activate KEY_FILE=... first
+run: export GOOGLE_APPLICATION_CREDENTIALS ?= tmp/lpgprj-gss-p-ctrlog-gl-01-c0096aaa9469.json
+run: ## run BIN, e.g. make run BIN=<binary>
+	cabal run $(BIN) -- $(ARG)
+
+#repl: export GOOGLE_APPLICATION_CREDENTIALS ?= /Users/milee/.zulu/lpgprj-gss-p-ctrlog-gl-01-c0096aaa9469.json
 repl: ## repl
-	cabal $(OPT) repl
+	cabal repl
+
+update: ## update nix and cabal project dependencies
+update: nix-update-all cabal-update
+
+cabal-update: ## update cabal project depedencies
+	nix develop \
+	&& cabal update \
+	&& exit
+
+flake-update: ## update nix and project dependencies
+	nix flake update
 
 help: ## help
-	-@grep --extended-regexp '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
-	| sed 's/^Makefile://1' \
-	| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}'
+	-@grep --extended-regexp '^[0-9A-Za-z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+	  | sed 's/^Makefile://1' \
+	  | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}'
 	-@ghc --version
 	-@cabal --version
 	-@hlint --version
-	-@ghcid --version --ignore-loaded
-	-@echo BIN=$(BIN)
 
-# @todo: not indempotent--fix later
-init: ## init or update project but run "make install-nix" first
-	${MAKE} -f etc/init.mk init
+nix-build: ## build with nix
+	nix --print-build-logs build --impure
 
-install-nix: # install nix
-	${MAKE} -f etc/init.mk install-nix
+nix-install: ## install to profile
+	nix profile install
 
-shell: ## initialize project
-	${MAKE} -f etc/init.mk nix-shell
+nix-clean: ## clean up /nix
+	nix-collect-garbage --delete-old
 
-# @todo: not indempotent--fix later
-update: ## update project depedencies
-	${MAKE} -f etc/init.mk cabal-update
-	${MAKE} -f etc/init.mk install-pkgs
+nix-clobber: ## clean up everything: https://nixos.org/guides/nix-pills/garbage-collector.html
+	sudo rm -f /nix/var/nix/gcroots/auto/*
+	nix-collect-garbage --delete-old
 
-curl: ## curl --head https://google.com
-	echo $(NIX_SSL_CERT_FILE)
-	curl --head https://google.com/
+nix-update-all: ## init/update nix globally
+	nix-channel --add https://nixos.org/channels/nixpkgs-unstable unstable
+	nix-channel --update
+	sudo nix profile upgrade '.*'
+	nix flake update
+

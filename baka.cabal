@@ -1,4 +1,4 @@
-cabal-version:        3.4
+cabal-version:        3.8
 name:                 baka
 version:              0.1.0.0
 license:              BSD-3-Clause
@@ -9,45 +9,57 @@ category:             Baka
 extra-source-files:   CHANGELOG.md
 
 library
-  exposed-modules:    Baka.Amz
-                    , Baka.Grid
-                    , Baka.Maze
-                    , Baka.NinetyNine
-                    , Baka.River
-                    , Baka.RiverSkip
-  hs-source-dirs:     src
-  ghc-options:        -O2 -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fno-warn-type-defaults -flate-specialise -fspecialise-aggressively
+  exposed-modules: Baka.Amz
+                 , Baka.Grid
+                 , Baka.Maze
+                 , Baka.NinetyNine
+                 , Baka.River
+                 , Baka.RiverSkip
+  hs-source-dirs: src
+  ghc-options: -O2 -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fno-warn-type-defaults -flate-specialise -fspecialise-aggressively
   default-language:   Haskell2010
   default-extensions: BangPatterns
                     , BlockArguments
+                    , ConstraintKinds
                     , DataKinds
                     , DeriveAnyClass
+                    , DeriveFunctor
                     , DeriveGeneric
-                    , DerivingStrategies
+                    , DerivingVia
                     , DuplicateRecordFields
                     , FlexibleContexts
+                    , FlexibleInstances
                     , GADTs
-                    , GeneralizedNewtypeDeriving
+                    , KindSignatures
                     , LambdaCase
+                    , MultiParamTypeClasses
                     , PatternSynonyms
                     , PolyKinds
+                    , QuasiQuotes
                     , OverloadedStrings
+                    , OverloadedRecordDot
+                    , PolyKinds
                     , RankNTypes
+                    , RecordWildCards
+                    , StandaloneDeriving
                     , ScopedTypeVariables
+                    , StarIsType
                     , StrictData
                     , TemplateHaskell
+                    , TupleSections
                     , TypeApplications
-                    , TypeOperators
                     , TypeFamilies
-  build-depends:      base ^>=4.14.1.0
-                    , containers
-                    , lens
-                    , random
+                    , TypeOperators
+                    , TypeSynonymInstances
+  build-depends: base
+               , containers
+               , lens
+               , random
 
 executable baka
   main-is:          baka.hs
   hs-source-dirs:   app
   ghc-options:      -Wall -O2 -flate-specialise -fspecialise-aggressively
   default-language: Haskell2010
-  build-depends:    base ^>=4.14.1.0
+  build-depends:    base
                   , baka
