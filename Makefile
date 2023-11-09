@@ -9,16 +9,14 @@ PWD     := $(shell pwd)
 
 BIN ?= baka
 
-CABAL_BUILD = cabal build --jobs '$$ncpus' --minimize-conflict-set 
+CABAL_BUILD = 
 
 build: clean ## build (default)
-	@$(CABAL_BUILD) 2>&1 \
+	@cabal build --jobs='$$ncpus' --minimize-conflict-set 2>&1 \
 	| source-highlight --src-lang=haskell --out-format=esc
 
 buildc: clean ## build continuously
-	@$(CABAL_BUILD) 2>&1 \
-	| source-highlight --src-lang=haskell --out-format=esc
-	watchexec --exts cabal,hs -- $(CABAL_BUILD) 2>&1 \
+	@watchexec --exts cabal,hs -- cabal build --jobs '$$ncpus' --minimize-conflict-set 2>&1 \
 	| source-highlight --src-lang=haskell --out-format=esc
 
 install: # install binary
@@ -37,7 +35,9 @@ lint: ## lint
 
 clean: ## clean
 	-cabal clean
-	-find . -name \*~ | xargs rm -f
+
+cleaner: clean ## cleaner
+	-find . -name \~ | xargs rm -f
 
 clobber: clean ## cleanpq
 	rm -rf dist-newstyle
