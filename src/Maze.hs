@@ -16,7 +16,7 @@ data Tree = Node Point [Tree]
 fromMaze :: Point -> Maze -> Tree
 fromMaze p mz = let ps = neighbors p mz
                     mz' = block p mz
-                in Node p ((\p' -> fromMaze p' mz') <$> ps)
+                in Node p ((`fromMaze` mz') <$> ps)
 
 neighbors :: Point -> Maze -> [Point]
 neighbors p mz = let ps = filter (/= Nothing) $ (\d -> move p d mz) <$> dirs
@@ -33,7 +33,7 @@ right = (0, 1)
 
 move :: Point -> Dir -> Maze -> Maybe Point
 move (r, c) (r', c') mz = let (row, col) = (r + r', c + c')
-                              (maxRow, maxCol) = (length mz, length (mz !! 0))
+                              (maxRow, maxCol) = (length mz, length (head mz))
                           in if row < 0 || col < 0 || row >= maxRow || col >= maxCol
                              then Nothing
                              else if (mz !! row) !! col

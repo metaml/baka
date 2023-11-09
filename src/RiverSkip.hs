@@ -17,5 +17,5 @@ toTree r@(s:_) b v =
 path :: Tree -> [Velocity] -> [Velocity]
 path (Node b v ts) vs = if b
                         then let vs' = vs <> [v]
-                             in concatMap (\t -> path t vs') ts
+                             in concatMap (`path` vs') ts
                         else vs

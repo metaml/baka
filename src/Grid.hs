@@ -30,7 +30,7 @@ dir (Point r c) (r', c') g =
   let row = r + r'
       col = c + c'
       maxRow = length grid
-      maxCol = length (grid !! 0)
+      maxCol = length (head grid)
   in if col < 0 || row < 0 || row >= maxRow || col >= maxCol
      then Nothing
      else if (g !! row) !! col
@@ -74,7 +74,7 @@ points :: Grid -> [Point]
 points g' = fromJust <$> filter (/= Nothing) (points' g')
   where points' :: Grid -> [Maybe Point]
         points' g = [ Just (Point r c) | r <- [0..length g - 1]
-                                       , c <- [0..length (g !! 0) - 1]
+                                       , c <- [0..length (head g) - 1]
                                        , (g !! r) !! c ]
 start :: Point
 start = Point 0 0
