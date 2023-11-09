@@ -1,7 +1,7 @@
-module Baka.Grid where
+module Grid where
 
 import Control.Lens
-import Data.List
+import Data.List ((\\))
 import Data.Maybe
 import qualified Data.Map as M
 
@@ -63,21 +63,23 @@ paths' p g vs = let vs' = vs <> [p]
                      [] -> [vs']
                      _  -> concatMap (\n -> paths' n g vs') ns
 
-adjMat :: Ord Point => M.Map Point [Point]
+adjMat :: M.Map Point [Point]
 adjMat = adjMat' grid
-  where adjMat' :: Ord Point => Grid -> M.Map Point [Point]
+  where adjMat' :: Grid -> M.Map Point [Point]
         adjMat' g = let ps = points g
                         pps = (\p -> (p, neighbors p g)) <$> ps
                     in M.fromList pps
 
 points :: Grid -> [Point]
-points g = fromJust <$> filter (/= Nothing) (points' g)
+points g' = fromJust <$> filter (/= Nothing) (points' g')
   where points' :: Grid -> [Maybe Point]
         points' g = [ Just (Point r c) | r <- [0..length g - 1]
                                        , c <- [0..length (g !! 0) - 1]
                                        , (g !! r) !! c ]
-
+start :: Point
 start = Point 0 0
+
+grid :: [[Bool]]
 grid = [ [True, True,  False, False]
        , [True, False, False, False]
        , [True, True,  False, True]

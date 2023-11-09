@@ -1,4 +1,4 @@
-module Baka.Maze where
+module Maze where
 
 import Control.Lens
 import Data.Maybe

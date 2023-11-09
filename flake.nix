@@ -24,7 +24,6 @@
             gmp
             hkgs.cabal-install
             hkgs.ghc
-            hkgs.haskell-language-server
             hkgs.hlint
             sourceHighlight
             watchexec

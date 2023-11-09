@@ -1,4 +1,4 @@
-module Baka.River where
+module River where
 
 type Velocity = Int
 type Index = Int

@@ -1,4 +1,4 @@
-module Baka.NinetyNine where
+module NinetyNine where
 
 import System.Random
 

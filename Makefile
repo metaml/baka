@@ -9,7 +9,7 @@ PWD     := $(shell pwd)
 
 BIN ?= baka
 
-CABAL_BUILD = cabal build --jobs \$$ncpus --minimize-conflict-set 
+CABAL_BUILD = cabal build --jobs '$$ncpus' --minimize-conflict-set 
 
 build: clean ## build (default)
 	@$(CABAL_BUILD) 2>&1 \
@@ -37,6 +37,7 @@ lint: ## lint
 
 clean: ## clean
 	-cabal clean
+	-find . -name \*~ | xargs rm -f
 
 clobber: clean ## cleanpq
 	rm -rf dist-newstyle

@@ -1,4 +1,4 @@
-module Baka.Amz where
+module Amz where
 
 import Data.List ((\\))
 
@@ -24,8 +24,8 @@ merge xs@(x:xs') ys@(y:ys')
   | x <= y               = x:merge xs' ys
   | otherwise            = y:merge xs ys'
 
-data Tree a = Empty | Node a (Tree a)  (Tree a)
-            deriving (Eq, Show)
+data Tree a = Empty | Node a (Tree a) (Tree a)
+            deriving (Eq, Ord, Show)
 
 toTree :: Ord a => [a] -> Tree a
 toTree = foldr add Empty

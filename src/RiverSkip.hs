@@ -1,4 +1,4 @@
-module Baka.RiverSkip where
+module RiverSkip where
 
 type Velocity = Int
 type River = String
