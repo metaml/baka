@@ -3,8 +3,7 @@ module Main where
 import Hr.Dna
 
 main :: IO ()
-main = readInput
-  
+main = dnaMain
 
 -- let ms = msquares squares
 -- mapM_ print ms

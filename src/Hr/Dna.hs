@@ -23,8 +23,8 @@ health :: Gene -> Health -> Dna -> Int
 health g h dna = let hs = (\hit -> if hit then h else 0) <$> match g dna
                  in sum hs
 
-readInput :: IO ()
-readInput = do
+dnaMain :: IO ()
+dnaMain = do
   n :: Int             <- getLine <&> read
   genes :: [String]    <- getLine <&> take n . words
   hps :: [String]      <- getLine <&> take n . words
