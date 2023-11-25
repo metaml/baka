@@ -3,6 +3,7 @@ module Hr.Dna where
 import Control.Monad (replicateM)
 import Data.List (isPrefixOf)
 import Data.Function ((&))
+import Data.Functor ((<&>))
 import qualified Streamly.Data.Stream as S
 import qualified Streamly.Data.Fold as F
 import qualified Streamly.Data.Unfold as U
@@ -11,7 +12,7 @@ type Gene = String
 type Health = Int
 type Dna = String
 
--- represent as a fold
+-- @todo: represent as a fold
 match :: Gene -> Dna -> [Bool]
 match _ []           = []
 match g dna@(_:dna') = if g `isPrefixOf` dna
@@ -24,10 +25,10 @@ health g h dna = let hs = (\hit -> if hit then h else 0) <$> match g dna
 
 readInput :: IO ()
 readInput = do
-  n :: Int             <- read <$> getLine
-  genes :: [String]    <- getLine >>= pure . take n . words
-  hps :: [String]      <- getLine >>= pure . take n . words
-  strands :: Int       <- read <$> getLine -- number of lines ("strands") of dna 
+  n :: Int             <- getLine <&> read
+  genes :: [String]    <- getLine <&> take n . words
+  hps :: [String]      <- getLine <&> take n . words
+  strands :: Int       <- getLine <&> read -- number of lines ("strands") of dna 
   rawdna :: [[String]] <- replicateM strands (getLine >>= pure . words)
   hs :: [Int] <- S.fromPure rawdna
                  & S.unfoldMany U.fromList  
