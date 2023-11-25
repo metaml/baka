@@ -13,7 +13,7 @@ NEWER=streamly-core:ghc-prim,streamly-core:template-haskell,template-haskell
 CABARGS=--minimize-conflict-set --allow-newer='$(NEWER)'
 
 build: clean ## build (default)
-	cabal build --jobs '$$ncpus' $(CABARGS) 2>&1 \
+	cabal build --jobs='$$ncpus' $(CABARGS) 2>&1 \
 	| source-highlight --src-lang=haskell --out-format=esc
 
 buildc: # clean ## build continuously
