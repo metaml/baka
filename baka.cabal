@@ -10,7 +10,11 @@ extra-source-files:   CHANGELOG.md
 
 library
   exposed-modules: Amz
+                 , BinaryTree
                  , Grid
+                 , Hr.Dna
+                 , List
+                 , Magic
                  , Maze
                  , NinetyNine
                  , River
@@ -53,8 +57,10 @@ library
                     , TypeSynonymInstances
   build-depends: base
                , containers
+               , extra
                , lens
                , random
+               , streamly-core
 
 executable baka
   main-is:          baka.hs

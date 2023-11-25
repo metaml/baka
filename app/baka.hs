@@ -1,4 +1,10 @@
 module Main where
 
+import Hr.Dna
+
 main :: IO ()
-main = putStrLn "Hello, World!"
+main = readInput
+  
+
+-- let ms = msquares squares
+-- mapM_ print ms

@@ -9,20 +9,19 @@ PWD     := $(shell pwd)
 
 BIN ?= baka
 
-CABAL_BUILD = 
+NEWER=streamly-core:ghc-prim,streamly-core:template-haskell,template-haskell
+CABARGS=--minimize-conflict-set --allow-newer='$(NEWER)'
 
 build: clean ## build (default)
-	@cabal build --jobs='$$ncpus' --minimize-conflict-set 2>&1 \
+	cabal build --jobs '$$ncpus' $(CABARGS) 2>&1 \
 	| source-highlight --src-lang=haskell --out-format=esc
 
-buildc: clean ## build continuously
-	@watchexec --exts cabal,hs -- cabal build --jobs '$$ncpus' --minimize-conflict-set 2>&1 \
+buildc: # clean ## build continuously
+	watchexec --exts cabal,hs --  cabal build --jobs '$$ncpus' $(CABARGS) 2>&1 \
 	| source-highlight --src-lang=haskell --out-format=esc
 
-install: # install binary
-	rm -rf bin/* && mkdir -p bin
-	cabal build --verbose
-	cabal install --overwrite-policy=always --install-method=copy --installdir=bin
+install: clobber build # install binary
+	cabal install $(CABARGS)  --overwrite-policy=always --install-method=copy --installdir=bin
 
 dev: ## nix develop
 	nix develop
@@ -40,17 +39,16 @@ cleaner: clean ## cleaner
 	-find . -name \~ | xargs rm -f
 
 clobber: clean ## cleanpq
-	rm -rf dist-newstyle
 	rm -rf tmp/*
 
 # make activate KEY_FILE=... first
 run: export GOOGLE_APPLICATION_CREDENTIALS ?= tmp/lpgprj-gss-p-ctrlog-gl-01-c0096aaa9469.json
 run: ## run BIN, e.g. make run BIN=<binary>
-	cabal run $(BIN) -- $(ARG)
+	cabal run $(CABARGS) $(BIN) -- $(ARG)
 
 #repl: export GOOGLE_APPLICATION_CREDENTIALS ?= /Users/milee/.zulu/lpgprj-gss-p-ctrlog-gl-01-c0096aaa9469.json
 repl: ## repl
-	cabal repl
+	cabal repl $(CABARGS)
 
 update: ## update nix and cabal project dependencies
 update: nix-update-all cabal-update
