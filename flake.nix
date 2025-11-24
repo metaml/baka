@@ -11,9 +11,8 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         name = "baka";
-        ghc-version = "ghc963";
+        ghc = pkgs.haskell.compiler.ghc912;
         pkgs = nixpkgs.legacyPackages.${system};
-        hkgs = pkgs.haskell.packages.${ghc-version}; # "make update" first sometimes helps
         revision = "${self.lastModifiedDate}-${self.shortRev or "dirty"}";
       in rec {
         # nix develop
@@ -22,9 +21,9 @@
             cacert
             git
             gmp
-            hkgs.cabal-install
-            hkgs.ghc
-            hkgs.hlint
+            cabal-install
+            ghc
+            hlint
             sourceHighlight
             watchexec
             zlib.dev

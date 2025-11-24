@@ -12,10 +12,13 @@ library
   exposed-modules: Amz
                  , BinaryTree
                  , Grid
+                 , Hr.Dir
                  , Hr.Dna
+                 , Hr.Maximize
+                 , Hr.Parens
                  , List
                  , Magic
-                 , Maze
+                 , Maze                 
                  , NinetyNine
                  , River
                  , RiverSkip
@@ -60,7 +63,9 @@ library
                , extra
                , lens
                , random
+               , scalpel
                , streamly-core
+               , text
 
 executable baka
   main-is:          baka.hs

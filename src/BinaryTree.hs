@@ -29,5 +29,16 @@ search Nil _  = False
 search (Node x l r) y
   | y == x    = True
   | y < x     = search l y
-  | otherwise = search r y  
+  | otherwise = search r y
 
+preorder :: Tree a -> [a]
+preorder Nil          = []
+preorder (Node x l r) = [x] <> postorder l <> postorder r
+
+inorder :: Tree a -> [a]
+inorder Nil          = []
+inorder (Node x l r) = postorder l <> [x] <> postorder r
+
+postorder :: Tree a -> [a]
+postorder Nil          = []
+postorder (Node x l r) = postorder l <> postorder r <> [x]

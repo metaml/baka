@@ -3,7 +3,5 @@ module Main where
 import Hr.Dna
 
 main :: IO ()
-main = dnaMain
+main = print "Hello, World!"
 
--- let ms = msquares squares
--- mapM_ print ms

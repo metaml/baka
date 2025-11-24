@@ -12,7 +12,7 @@ BIN ?= baka
 NEWER=streamly-core:ghc-prim,streamly-core:template-haskell,template-haskell
 CABARGS=--minimize-conflict-set --allow-newer='$(NEWER)'
 
-build: clean ## build (default)
+build: ## build (default)
 	cabal build --jobs='$$ncpus' $(CABARGS) 2>&1 \
 	| source-highlight --src-lang=haskell --out-format=esc
 
@@ -33,7 +33,8 @@ lint: ## lint
 	hlint app src
 
 clean: ## clean
-	-cabal clean
+	cabal clean
+	find . -name \*~ | xargs rm -f
 
 cleaner: clean ## cleaner
 	-find . -name \~ | xargs rm -f
@@ -87,4 +88,3 @@ nix-update-all: ## init/update nix globally
 	nix-channel --update
 	sudo nix profile upgrade '.*'
 	nix flake update
-
